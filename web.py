@@ -1,20 +1,11 @@
 import streamlit as st
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from sentiments import sentiment_analyzer_scores
 import time
-import datetime as dt
-import pandas as pd
-from twitterscraper import query_tweets
+from word_cloud import generate_wordcloud
+
 st.title('Sentiment Analysis')
 st.header('Senti-Tweet')
 st.text("Emotion AI. What was the twitter user feeling?")
-
-analyser = SentimentIntensityAnalyzer()
-
-def sentiment_analyzer_scores(sentence):
-    score = analyser.polarity_scores(sentence) # obtain polarity index of given sentence.
-    # produces the index of the -ve, +ve, neutral and compound sentiment
-    # the compound score is a sum of all lexicon ratings normalized between -1(very negative) to 1 (very positive)
-    return score
 
 with st.spinner('Firing up the engines...'):
     time.sleep(2) # animate loading spinner
@@ -33,5 +24,9 @@ with st.spinner('Predicting...'):
         st.write(f'Negative score: {score["neg"]}')
         st.write(f'Positive score: {score["pos"]}')
         st.write(f'Compound score: {score["compound"]}')
+
+        if st.checkbox("Generate word cloud for phrase/Tweet"):
+            generate_wordcloud(text_input, 'Tweet')
+
 
 
