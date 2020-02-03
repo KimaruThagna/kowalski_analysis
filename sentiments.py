@@ -14,4 +14,4 @@ def sentiment_analyzer_scores(sentence):
 
     return f'Below are the sentiment scores of the query. \n Neutral score: {score["neu"]}\n ' \
            f'Negative score: {score["neg"]} \n Positive score: {score["pos"]}\n' \
-           f'The general sentiment is {full_names[max_sentiment]} - {max_val}'
+           f'The general sentiment is {full_names[max_sentiment]} {max_val}'
