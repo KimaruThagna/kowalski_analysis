@@ -16,26 +16,28 @@ def listen(api, since_id):
         if tweet.in_reply_to_status_id is not None: # check if the current tweet is a reply to another tweet.
             continue # only interested in main tweets and not replies
         logger.info(f"Answering to {tweet.user.name}")
-        if not tweet.user.following and tweet.user is not me: # follow the user who summoned the bot and not self
+
+        if tweet.user.id != me.id and not tweet.user.following: # follow the user who summoned the bot and not self
             tweet.user.follow()
         # remove username part
-        keyword = str(tweet.text).replace(f'@{screen_name}', "")
-        # split_tweet = tweet.text.split(" ")
-        # keyword = split_tweet[1:]
-        # keyword = " ".join(keyword)
-        # generate word cloud from retrieved tweets
-        generate_wordcloud(retrieve_tweets(keyword), f'For you {tweet.user}')
-        wordcloud_img = api.media_upload(f'wordcloud/{tweet.user.id}.png')
+        keyword = str(tweet.text).replace(f'{screen_name}', "")
+        print(f'{keyword}')
+
         if keyword == "": # query is empty
             api.update_status(
                 status= f'{new_since_id} Im gonna need a topic for query and analysis',
                 in_reply_to_status_id=tweet.id,
             )
         else:
+
+            generate_wordcloud(retrieve_tweets(keyword), f'For you {tweet.user}', f'wordcloud/{tweet.user.id}.png')
+            img_file = open(f'wordcloud/{tweet.user.id}.png','rb')
+            wordcloud_img = api.media_upload(filename=f'wordcloud/{tweet.user.id}.png', file=img_file)
+
             api.update_status(
-                status= sentiment_analyzer_scores(retrieve_tweets(keyword)), # results of the analysis
+                status=sentiment_analyzer_scores(retrieve_tweets(keyword)), # results of the analysis
                 in_reply_to_status_id=tweet.id,
-                media_ids= wordcloud_img.media_id_string,
+                media_ids=[wordcloud_img.media_id_string]
             )
     return new_since_id
 
