@@ -2,7 +2,7 @@ import tweepy, logging, time
 from config.config import create_api
 from sentiments import sentiment_analyzer_scores
 from retrieve_tweets import retrieve_tweets
-
+from word_cloud import generate_wordcloud
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
@@ -23,6 +23,9 @@ def listen(api, since_id):
         # split_tweet = tweet.text.split(" ")
         # keyword = split_tweet[1:]
         # keyword = " ".join(keyword)
+        # generate word cloud from retrieved tweets
+        generate_wordcloud(retrieve_tweets(keyword), f'For you {tweet.user}')
+        wordcloud_img = api.media_upload(f'wordcloud/{tweet.user.id}.png')
         if keyword == "": # query is empty
             api.update_status(
                 status= f'{new_since_id} Im gonna need a topic for query and analysis',
@@ -32,6 +35,7 @@ def listen(api, since_id):
             api.update_status(
                 status= sentiment_analyzer_scores(retrieve_tweets(keyword)), # results of the analysis
                 in_reply_to_status_id=tweet.id,
+                media_ids= wordcloud_img.media_id_string,
             )
     return new_since_id
 

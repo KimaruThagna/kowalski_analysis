@@ -5,7 +5,7 @@ def generate_wordcloud(text_phrase, title):
     plt.figure(figsize=(10, 7))
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis('off')
-    plt.title(f'WORDCLOUD FOR {title}')
+    plt.title(title)
     plt.show()
 
 
