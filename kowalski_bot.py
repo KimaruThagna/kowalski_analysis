@@ -12,7 +12,6 @@ def listen(api, since_id):
     new_since_id = since_id
     screen_name = f'@{me.screen_name}'
     for tweet in tweepy.Cursor(api.mentions_timeline, since_id=since_id).items():
-        print(f'>>>>{me.screen_name}>>>>>>>>{tweet.text}')
         new_since_id = max(tweet.id, new_since_id)
         if tweet.in_reply_to_status_id is not None: # check if the current tweet is a reply to another tweet.
             continue # only interested in main tweets and not replies
@@ -20,9 +19,10 @@ def listen(api, since_id):
         if not tweet.user.following and tweet.user is not me: # follow the user who summoned the bot and not self
             tweet.user.follow()
         # remove username part
-        split_tweet = tweet.text.split(" ")
-        keyword = split_tweet[1:]
-        keyword = " ".join(keyword)
+        keyword = str(tweet.text).replace(f'@{screen_name}', "")
+        # split_tweet = tweet.text.split(" ")
+        # keyword = split_tweet[1:]
+        # keyword = " ".join(keyword)
         if keyword == "": # query is empty
             api.update_status(
                 status= f'{new_since_id} Im gonna need a topic for query and analysis',
