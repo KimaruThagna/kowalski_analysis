@@ -3,6 +3,8 @@ from config.config import create_api
 from sentiments import sentiment_analyzer_scores
 from retrieve_tweets import retrieve_tweets
 from word_cloud import generate_wordcloud
+from random import random
+import preprocessor as p
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
@@ -20,12 +22,12 @@ def listen(api, since_id):
         if tweet.user.id != me.id and not tweet.user.following: # follow the user who summoned the bot and not self
             tweet.user.follow()
         # remove username part
-        keyword = str(tweet.text).replace(f'{screen_name}', "")
+        keyword = str( p.clean(tweet.text)).replace(f'{screen_name}', "")
         print(f'{keyword}')
 
         if keyword == "": # query is empty
             api.update_status(
-                status= f'{new_since_id} Im gonna need a topic for query and analysis',
+                status= f'{random()} Im gonna need a topic for query and analysis',
                 in_reply_to_status_id=tweet.id,
             )
         else:
